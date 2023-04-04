@@ -3,10 +3,11 @@ package module
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/ian-kent/gptchat/config"
 	"github.com/ian-kent/gptchat/ui"
 	openai "github.com/sashabaranov/go-openai"
-	"strings"
 )
 
 type Module interface {
@@ -69,14 +70,14 @@ type CommandResult struct {
 }
 
 func HelpCommand() (bool, *CommandResult) {
-	result := "Here are the commands you have available:\n\n"
+	result := "Here are the commands KentBot has available:\n\n"
 	for _, mod := range loadedModules {
 		result += fmt.Sprintf("    * /%s\n", mod.ID())
 	}
 	result += `
-You can call commands using the /command syntax.
+KentBot can call commands using the /command syntax.
 
-Calling a command without any additional arguments will explain it's usage. You should do this to learn how the command works.`
+Calling a command without any additional arguments will explain it's usage. KentBot should do this to learn how the command works.`
 
 	return true, &CommandResult{
 		Prompt: result,

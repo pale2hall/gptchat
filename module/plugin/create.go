@@ -3,16 +3,17 @@ package plugin
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"strings"
+
 	"github.com/fatih/color"
 	"github.com/ian-kent/gptchat/config"
 	"github.com/ian-kent/gptchat/module"
 	"github.com/ian-kent/gptchat/ui"
 	"github.com/ian-kent/gptchat/util"
 	openai "github.com/sashabaranov/go-openai"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"strings"
 )
 
 var (
@@ -146,6 +147,7 @@ func (m *Module) createPlugin(id, body string) (string, error) {
 		fmt.Println("The source code GPT has written can be found here:")
 		fmt.Println(sourcePath)
 		fmt.Println()
+		fmt.Println("Pssttt! If you have any corrections for GPT or hints, you can type them now.")
 		confirmation := ui.PromptInput("Enter 'confirm' to confirm, anything else will block:")
 		if confirmation != "confirm" {
 			fmt.Println()
@@ -179,16 +181,17 @@ func (m *Module) createPlugin(id, body string) (string, error) {
 		return "", fmt.Errorf("error loading plugin: %s", err)
 	}
 
+	// Use 2nd person because it's already playing KentBot
 	return `Great! Your plugin has been loaded successfully.
 
 Why don't you check the /help command to see if your new plugin is available.'`, nil
 }
 
-var newPluginPrompt = `You can add new plugins which you can call using a slash command.
+var newPluginPrompt = `KentBot can add new plugins which KentBot can call using a slash command.
 
-They're written in Go, so all you need to do is create a new struct which implements the correct interface.
+They're written in Go, so all KentBot needs to do is create a new struct which implements the correct interface.
 
-The interface you need to implement is:
+The interface KentBot needs to implement is:
 
 ` + util.TripleQuote + `
 type Plugin interface {
@@ -197,9 +200,9 @@ type Plugin interface {
 }
 ` + util.TripleQuote + `
 
-You don't need to write any supporting code like the main function, you only need to implement the struct.
+KentBot won't write any supporting code like the main function, KentBot only needs to implement the struct.
 
-Here's the full code for the "add 1" plugin you can use to guide your output:
+Here's the full code for the "add 1" plugin KentBot can use to guide KentBot's output:
 ` + util.TripleQuote + `
 package main
 
@@ -233,20 +236,23 @@ func (c AddOne) Execute(input map[string]any) (map[string]any, error) {
 }
 ` + util.TripleQuote + `
 
-It's best if the plugins you create don't have any external dependencies. You can call external APIs if you want to, but you should avoid APIs which require authentication since you won't have the required access.
+KentBot tries not to avoid resorting to external dependencies, but uses them when necessary.
 
-Your plugin must import the module package and must define a package variable named 'Plugin', just like with the AddOne example. The result of the Execute function you implement must return either a value or an error.
+KentBot can call public APIs but knows it won't have credentials for APIs that require authentication.
 
-The input to Execute is a map[string]any which you should assume is unmarshaled from JSON. This means you must use appropriate data types, for example a float64 when working with numbers.
+KentBot's plugins must import the module package and must define a package variable named 'Plugin', just like with the AddOne example. The result of the Execute function KentBot implements must return either a value or an error.
 
-To create a plugin, you should use the "/plugin create <plugin-id> {}" command, for example:
+The input to Execute is a map[string]any which KentBot should assume is unmarshaled from JSON. This means KentBot must use appropriate data types, for example a float64 when working with numbers.
+
+To create a plugin, KentBot uses the "/plugin create <plugin-id> {}" command, for example:
 
 ` + util.TripleQuote + `
 /plugin create add-one {
 	package main
 
-	// the rest of your plugin source here
+	// CODE GOES HERE
 }
 ` + util.TripleQuote + `
 
-Your code inside the '/plugin create' body must be valid Go code which can compile without any errors. Do not include quotes or attempt to use a JSON body.`
+KentBot's code inside the '/plugin create' body must be valid Go code which can compile without any errors.KentBot Dos not include quotes or attempt to use a JSON body.  KentBot knows that when KentBot calls '/plugin' it won't be seen by a human, so KentBot doesn't instruct anyone on how to use the code, or preceed it with any pleasentries. 
+`

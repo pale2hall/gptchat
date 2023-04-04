@@ -1,8 +1,9 @@
 package memory
 
 import (
-	"github.com/ian-kent/gptchat/util"
 	"time"
+
+	"github.com/ian-kent/gptchat/util"
 )
 
 func (m *Module) Store(input string) (string, error) {
